@@ -1,47 +1,60 @@
-import React, { useState } from 'react'
+import React, { useReducer } from 'react'
 import Bar from './Bar'
 import Task from './Task'
 import { TaskI } from './TaskInterface'
 
 function App({ initialTasks }: {initialTasks: TaskI[]}) {
-  const [tasks, setTasks] = useState(initialTasks)
+  const [tasks, dispatch] = useReducer(tasksReducer, initialTasks)
 
   function handleAddTask(newTaskText: string) {
-    // !!! READ HERE | READ HERE |READ HERE |READ HERE |READ HERE |READ HERE |READ HERE |READ HERE |READ HERE |READ HERE | !!!
-    //
-    // change state
-    // what? -> Get new state and pass it
-    // Could create new arr and add the new task
-
-    // const newTasksState = [...tasks]
-    // newTasksState.push({
-    //   id: newTaskId + 1,
-    //   text: newTaskText,
-    //   done: false
-    // })
-    // setTasks(newTasksState)
-
-    // Refactored 👇
     let newTaskId = tasks[tasks.length - 1].id + 1
-    setTasks([...tasks, {
+    dispatch({
+      type: 'added',
       id: newTaskId,
       text: newTaskText,
-      done: false
-    }])
-  }
-
-  function handleDeleteTask(task: TaskI) {
-    setTasks(tasks.filter(t => t.id !== task.id))
+    })
   }
 
   function handleChangeTask(task: TaskI) {
-    const updatedTasks = tasks.map((t) => {
-      if (t.id === task.id) {
-        return task
-      }
-      return t
+    dispatch({
+      type: 'changed',
+      task: task
     })
-    setTasks(updatedTasks)
+  }
+
+  function handleDeleteTask(taskId: number) {
+    dispatch({
+      type: 'deleted',
+      id: taskId
+    })
+  }
+
+  function tasksReducer(tasks: TaskI[], action: {[key: string]: any}) {
+    switch (action.type) {
+      case 'added':
+        return [...tasks, {
+          id: action.id,
+          text: action.text,
+          done: false
+        }]
+        break
+
+      case 'changed':
+        return tasks.map((t: TaskI) => {
+          if (t.id === action.task.id) {
+            return action.task
+          }
+          return t
+        })
+        break
+
+      case 'deleted':
+        return tasks.filter((t: TaskI) => t.id !== action.id)
+        break
+
+      default:
+        throw Error('Unknown action: ' + action.type)
+    }
   }
 
   return (

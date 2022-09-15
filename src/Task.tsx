@@ -1,4 +1,4 @@
-import React, { ChangeEvent, SyntheticEvent, useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import { TaskI } from './TaskInterface'
 
 function Task({ task, onDelete, onChange }: {task: TaskI, onDelete: Function, onChange: Function}) {
@@ -28,7 +28,7 @@ function Task({ task, onDelete, onChange }: {task: TaskI, onDelete: Function, on
           <button type="button" onClick={() => setIsBeingEdited(true)}>Edit</button>
         </>
       )}
-      <button type="button" onClick={() => onDelete(task)}>Delete</button>
+      <button type="button" onClick={() => onDelete(task.id)}>Delete</button>
     </li>
   )
 }
